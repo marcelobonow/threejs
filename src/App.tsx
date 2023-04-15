@@ -3,6 +3,9 @@ import './App.css'
 
 import * as THREE from "three";
 
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import Stats from "three/examples/jsm/libs/stats.module";
+
 function App() {
   useEffect(() => {
     const scene = new THREE.Scene();
@@ -38,22 +41,30 @@ function App() {
     const boxMesh = new THREE.Mesh(boxGeometry, boxMaterial);
     scene.add(boxMesh);
 
+    let controls = new OrbitControls(camera, renderer.domElement);
+    const stats = new Stats();
+    document.body.appendChild(stats.dom);
+
     const animate = () => {
-      boxMesh.rotation.x += 0.01;
-      boxMesh.rotation.y += 0.01;
-      renderer.render(scene, camera);
       if (window.innerWidth != windowSize.width || window.innerHeight != windowSize.height) {
         Resize();
       }
+      stats.update();
+      controls.update();
+      boxMesh.rotation.x += 0.002;
+      boxMesh.rotation.y += 0.002;
+      renderer.render(scene, camera);
       window.requestAnimationFrame(animate);
     }
 
     function Resize() {
-      renderer.setSize(window.innerWidth, window.innerHeight);
       camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
       camera.position.z = 50;
 
-      // camera.aspect = window.innerWidth / window.innerHeight;
+      controls = new OrbitControls(camera, renderer.domElement);
+
+      renderer.setSize(window.innerWidth, window.innerHeight);
+
       windowSize.width = window.innerWidth;
       windowSize.height = window.innerHeight;
     }
@@ -62,7 +73,7 @@ function App() {
 
   return (
     <div className="App overflow-hidden">
-      <canvas className="absolute -z-[1]" id="myThreeJsCanvas" />
+      <canvas className="absolute z-0" id="myThreeJsCanvas" />
     </div>
   )
 }
