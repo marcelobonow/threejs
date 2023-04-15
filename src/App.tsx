@@ -7,7 +7,7 @@ function App() {
   useEffect(() => {
     const scene = new THREE.Scene();
 
-    const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
+    let camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera.position.z = 50;
 
     const canvas: HTMLCanvasElement | OffscreenCanvas = document.getElementById("myThreeJsCanvas") as HTMLCanvasElement | OffscreenCanvas;
@@ -17,6 +17,10 @@ function App() {
       antialias: false,
     });
 
+    const windowSize = {
+      width: window.innerWidth,
+      height: window.innerHeight,
+    }
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
@@ -38,15 +42,27 @@ function App() {
       boxMesh.rotation.x += 0.01;
       boxMesh.rotation.y += 0.01;
       renderer.render(scene, camera);
+      if (window.innerWidth != windowSize.width || window.innerHeight != windowSize.height) {
+        Resize();
+      }
       window.requestAnimationFrame(animate);
+    }
+
+    function Resize() {
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
+      camera.position.z = 50;
+
+      // camera.aspect = window.innerWidth / window.innerHeight;
+      windowSize.width = window.innerWidth;
+      windowSize.height = window.innerHeight;
     }
     animate();
   });
 
   return (
-    <div className="App">
-      <p>Canvas abaixo:</p>
-      <canvas id="myThreeJsCanvas" />
+    <div className="App overflow-hidden">
+      <canvas className="absolute -z-[1]" id="myThreeJsCanvas" />
     </div>
   )
 }
